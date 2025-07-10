@@ -62,9 +62,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/Core/Inc
     ${CMAKE_SOURCE_DIR}/Inc
     ${CMAKE_SOURCE_DIR}/Drivers
-    ${CMAKE_SOURCE_DIR}/../Shared/Inc    # <-- Add this line
-
-
+    ${CMAKE_SOURCE_DIR}/../Shared/Inc    
 )
 
 # Add project symbols (macros)
