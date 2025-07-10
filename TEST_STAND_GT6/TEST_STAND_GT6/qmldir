@@ -1,0 +1,5 @@
+module TEST_STAND_GT6
+typeinfo TSQT6.qmltypes
+prefer :/TEST_STAND_GT6/
+Main 1.0 Main.qml
+

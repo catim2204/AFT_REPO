@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="/TEST_STAND_GT6">/home/humble/Documents/TEST_STAND_GT6/TEST_STAND_GT6</file>
+
+  </qresource>
+</RCC>

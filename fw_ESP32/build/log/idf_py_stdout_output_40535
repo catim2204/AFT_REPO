@@ -1,0 +1,45 @@
+Command: ninja all
+[1/9] Performing build step for 'bootloader'
+[1/1] cd /home/humble/Desktop/AFT_Refactored/fw_ESP32/build/bootloader/esp-idf/esptool_py && /home/humble/.espressif/python_env/idf6.0_py3.10_env/bin/python /home/humble/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x16000 bootloader 0x1000 /home/humble/Desktop/AFT_Refactored/fw_ESP32/build/bootloader/bootloader.bin
+Bootloader binary size 0x7400 bytes. 0xdc00 bytes (65%) free.
+[2/7] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/hello_world_main.c.obj
+/home/humble/Desktop/AFT_Refactored/fw_ESP32/main/hello_world_main.c: In function 'app_main':
+/home/humble/Desktop/AFT_Refactored/fw_ESP32/main/hello_world_main.c:199:5: warning: 'esp_spp_init' is deprecated: Please use esp_spp_enhanced_init [-Wdeprecated-declarations]
+  199 |     ret = esp_spp_init(ESP_SPP_MODE_CB);
+      |     ^~~
+In file included from /home/humble/Desktop/AFT_Refactored/fw_ESP32/main/hello_world_main.c:5:
+/home/humble/esp/esp-idf/components/bt/host/bluedroid/api/include/api/esp_spp_api.h:276:11: note: declared here
+  276 | esp_err_t esp_spp_init(esp_spp_mode_t mode) __attribute__((deprecated("Please use esp_spp_enhanced_init")));
+      |           ^~~~~~~~~~~~
+/home/humble/Desktop/AFT_Refactored/fw_ESP32/main/hello_world_main.c:208:5: warning: 'esp_bt_dev_set_device_name' is deprecated: Please use esp_bt_gap_set_device_name or esp_ble_gap_set_device_name [-Wdeprecated-declarations]
+  208 |     ret = esp_bt_dev_set_device_name(DEVICE_NAME);
+      |     ^~~
+In file included from /home/humble/Desktop/AFT_Refactored/fw_ESP32/main/hello_world_main.c:4:
+/home/humble/esp/esp-idf/components/bt/host/bluedroid/api/include/api/esp_bt_device.h:99:11: note: declared here
+   99 | esp_err_t esp_bt_dev_set_device_name(const char *name) __attribute__((deprecated("Please use esp_bt_gap_set_device_name or esp_ble_gap_set_device_name")));
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/humble/Desktop/AFT_Refactored/fw_ESP32/main/hello_world_main.c: In function 'uart_task':
+/home/humble/Desktop/AFT_Refactored/fw_ESP32/main/hello_world_main.c:262:94: warning: passing argument 3 of 'esp_spp_write' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  262 |                 esp_err_t ret = esp_spp_write(spp_conn_handle, sizeof(Telemetry_Package_STR),(const char *)&Telemetry_Package);
+      |                                                                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/humble/esp/esp-idf/components/bt/host/bluedroid/api/include/api/esp_spp_api.h:416:60: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'const char *'
+  416 | esp_err_t esp_spp_write(uint32_t handle, int len, uint8_t *p_data);
+      |                                                   ~~~~~~~~~^~~~~~
+/home/humble/Desktop/AFT_Refactored/fw_ESP32/main/hello_world_main.c: In function 'spp_callback':
+/home/humble/Desktop/AFT_Refactored/fw_ESP32/main/hello_world_main.c:314:9: warning: 'esp_bt_dev_set_device_name' is deprecated: Please use esp_bt_gap_set_device_name or esp_ble_gap_set_device_name [-Wdeprecated-declarations]
+  314 |         esp_err_t ret = esp_bt_dev_set_device_name(DEVICE_NAME);
+      |         ^~~~~~~~~
+/home/humble/esp/esp-idf/components/bt/host/bluedroid/api/include/api/esp_bt_device.h:99:11: note: declared here
+   99 | esp_err_t esp_bt_dev_set_device_name(const char *name) __attribute__((deprecated("Please use esp_bt_gap_set_device_name or esp_ble_gap_set_device_name")));
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~
+[3/7] Linking C static library esp-idf/main/libmain.a
+[4/7] Generating esp-idf/esp_system/ld/sections.ld
+[5/7] Linking CXX executable Bluetooth_Part.elf
+[6/7] Generating binary image from built executable
+esptool.py v4.9.dev8
+Creating esp32 image...
+Merged 2 ELF sections
+Successfully created esp32 image.
+Generated /home/humble/Desktop/AFT_Refactored/fw_ESP32/build/Bluetooth_Part.bin
+[7/7] cd /home/humble/Desktop/AFT_Refactored/fw_ESP32/build/esp-idf/esptool_py && /home/humble/.espressif/python_env/idf6.0_py3.10_env/bin/python /home/humble/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x16000 partition --type app /home/humble/Desktop/AFT_Refactored/fw_ESP32/build/partition_table/partition-table.bin /home/humble/Desktop/AFT_Refactored/fw_ESP32/build/Bluetooth_Part.bin
+Bluetooth_Part.bin binary size 0xf08b0 bytes. Smallest app partition is 0x177000 bytes. 0x86750 bytes (36%) free.

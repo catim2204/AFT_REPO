@@ -1,0 +1,14 @@
+-rootPath
+/home/humble/Documents/TEST_STAND_GT6
+-cmake-output
+-output-file
+/home/humble/Documents/TEST_STAND_GT6/.qt/qml_imports/appTEST_STAND_GT6_build.cmake
+-importPath
+/home/humble/Documents/TEST_STAND_GT6/TEST_STAND_GT6
+-importPath
+/home/humble/Documents/TEST_STAND_GT6
+-importPath
+/home/humble/Qt/6.9.1/gcc_64/qml
+-qrcFiles
+/home/humble/Documents/TEST_STAND_GT6/.qt/rcc/qmake_TEST_STAND_GT6.qrc
+/home/humble/Documents/TEST_STAND_GT6/.qt/rcc/appTEST_STAND_GT6_raw_qml_0.qrc

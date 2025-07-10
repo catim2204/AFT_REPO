@@ -1,0 +1,8 @@
+/home/humble/Desktop/AFT/CMakeFiles/AFT.dir
+/home/humble/Desktop/AFT/CMakeFiles/edit_cache.dir
+/home/humble/Desktop/AFT/CMakeFiles/rebuild_cache.dir
+/home/humble/Desktop/AFT/cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir
+/home/humble/Desktop/AFT/cmake/stm32cubemx/CMakeFiles/USB_Device_Library.dir
+/home/humble/Desktop/AFT/cmake/stm32cubemx/CMakeFiles/FatFs.dir
+/home/humble/Desktop/AFT/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
+/home/humble/Desktop/AFT/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir

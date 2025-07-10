@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/humble/Desktop/AFT/cmake_install.cmake",
+		"/home/humble/Desktop/AFT/cmake/stm32cubemx/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

@@ -1,0 +1,2 @@
+/home/humble/Desktop/AFT_Refactored/fw_ESP32/CMakeFiles/edit_cache.dir
+/home/humble/Desktop/AFT_Refactored/fw_ESP32/CMakeFiles/rebuild_cache.dir

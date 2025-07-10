@@ -1,0 +1,17 @@
+{
+  "C_Cpp.intelliSenseEngine": "default",
+  "idf.espIdfPath": "/home/humble/esp/esp-idf",
+  "idf.pythonInstallPath": "/usr/bin/python3",
+  "idf.openOcdConfigs": [
+    "board/esp32-wrover-kit-3.3v.cfg"
+  ],
+  "idf.port": "/dev/ttyUSB0",
+  "idf.toolsPath": "/home/humble/.espressif",
+  "idf.customExtraVars": {
+    "idf.customExtraPaths": "/home/humble/esp/esp-idf/tools",
+    "IDF_TARGET": "esp32"
+  },
+  "idf.flashType": "UART",
+  "C_Cpp.default.compilerPath": "/usr/bin/gcc"
+  
+}

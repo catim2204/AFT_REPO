@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+              "name": "Linux-Qt6",
+        "includePath": [
+        "${workspaceFolder}/**",
+        "/home/humble/Qt/6.9.1/gcc_64/include",
+        "/home/humble/Qt/6.9.1/gcc_64/include/QtWidgets",
+        "/home/humble/Qt/6.9.1/gcc_64/include/QtCore",
+        "/home/humble/Qt/6.9.1/gcc_64//include/QtGui",
+        "/home/humble/Qt/6.9.1/gcc_64/include/QtQml",
+        "/home/humble/Qt/6.9.1/gcc_64/include/QtSerialPort",
+        "/home/humble/Qt/6.9.1/gcc_64/include/QtBluetooth",
+        "/home/humble/Qt/6.9.1/gcc_64/include/QtNetwork",
+        "/home/humble/Desktop/AFT_Refactored/Shared/Inc"
+      ],
+        "defines": [],
+        "compilerPath": "/usr/bin/g++",
+        "cStandard": "c17",
+        "cppStandard": "c++17",
+        "intelliSenseMode": "linux-gcc-x64",
+        "configurationProvider": "ms-vscode.cmake-tools"
+    }
+    ],
+      
+    "version": 4
+}

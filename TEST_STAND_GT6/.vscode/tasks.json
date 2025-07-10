@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Qt App",
+      "type": "shell",
+      "command": "cmake --build build", // Adjust if you use a different build dir
+      "group": "build",
+      "problemMatcher": ["$gcc"],
+      "detail": "Build the Qt application using CMake"
+    }
+  ]
+}

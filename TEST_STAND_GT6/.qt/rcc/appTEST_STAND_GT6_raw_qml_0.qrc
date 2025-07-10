@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/TEST_STAND_GT6/">
+    <file alias="Main.qml">/home/humble/Documents/TEST_STAND_GT6/Main.qml</file>
+  </qresource>
+</RCC>
+
