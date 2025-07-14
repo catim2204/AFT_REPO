@@ -27,7 +27,7 @@ public:
 signals:
     void deviceDiscovered(const QBluetoothDeviceInfo &Info);
     void discoveryFinished();
-    void dataReceived(const Telemetry_Package_STR &Data);
+    void receivedData(const Telemetry_Package_STR &Data);
     void socketErrorOccurred(QBluetoothSocket::SocketError Error);
 
 public slots:
@@ -37,7 +37,6 @@ public slots:
     void read();
 
 private slots:
-    
     void onSocketError(QBluetoothSocket::SocketError Error);
     void onDeviceDiscovered(const QBluetoothDeviceInfo &Device);
     void onDiscoveryFinished();

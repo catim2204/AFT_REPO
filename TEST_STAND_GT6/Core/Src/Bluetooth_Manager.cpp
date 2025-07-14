@@ -6,13 +6,15 @@ BluetoothManager::BluetoothManager(QObject *parent)
     : QObject(parent), discoveryAgent(nullptr), socket(nullptr)
 {
     qDebug() << BLU <<"[INFO][BLUETOOTH] Initializing Bluetooth Manager..."<<RESET;
-    init();
 }
 
 BluetoothManager::~BluetoothManager()
 {
-    deinit(); // Call deinit to clean up resources
-    qDebug() << BLU <<"[INFO][BLUETOOTH] BluetoothManager destroyed."<<RESET;
+    deinit(); 
+    if(socket==nullptr)
+    qDebug().noquote() << BLU << "[INFO][BLUETOOTH] BluetoothManager destroyed."<<RESET;
+    else
+    qDebug().noquote() << RED << "[ERROR][BLUETOOTH] Bluetooth failed to deinitialize";
 }
 
 void BluetoothManager::init()
@@ -117,10 +119,6 @@ void BluetoothManager::onDeviceDiscovered(const QBluetoothDeviceInfo &device)
     }
 }
 
-/**
- * @brief Reads bluetooth, copies received data in a buffer and then sends it as a signal 
- * 
- */
 void BluetoothManager::read()
 {   
     QByteArray BT_Buffer_Receive = socket->readAll();
@@ -133,44 +131,19 @@ void BluetoothManager::read()
      * 
      * @param telemetryPackage The data that has been received.
      */       
-    emit dataReceived(telemetryPackage);
+    emit receivedData(telemetryPackage);
 }
 
 }
 
-/**
- * @brief Function to handle Socket errors.
- * 
- * @param error 
- */
 void BluetoothManager::onSocketError(QBluetoothSocket::SocketError error)
 {
-    qWarning() << "Bluetooth Socket error:" << error << socket->errorString();
+    qDebug() << RED <<"[ERROR][BLUETOOTH]Bluetooth Socket error:" << error << socket->errorString()<<RESET;
 }
 
-/**
- *  @brief Function to write data to the Bluetooth Socket.
- *  This function packs the data into a `Information_Package` structure and sends it over the Bluetooth Socket.
- *  @note This function assumes that the `Socket` is already connected and open.
- *  It also assumes that the `Information_Package` structure is defined and matches the
- *  structure expected by the embedded system.
- *  @see Information_Package
- *  @note This function is called by the `CONNECT` button and the `SAVE_STAND` button.
- *  @note This function is called when the `Throttle` slider is moved, if the `Manual Check` checkbox is checked.
- *  @note This function is called when the `ARM Check` checkbox is checked.
- *  @note This function is called when the `CALIBRATE` button is pressed.
- *  @note This function is called when the `START` button is pressed.
- *  @note This function is called when the `SAVE` button is pressed.
- *  @note This function is called when the `Comm_Method` button is pressed to switch between Serial and Bluetooth communication.
- *  @note This function is called when the `CONNECT` button is pressed to establish a Bluetooth connection.
- *  @note This function is called when the `DISCONNECT` button is pressed to close the Bluetooth connection.
- *  @note This function is called when the `SAVE_STAND` button is pressed to save the current settings to the controller. 
-*/
 void BluetoothManager::write(const Information_Package_STR &Data)
 {
-
-        informationPackage= Data; // Copy the data from the parameter to the member variable
-        BT_Buffer_Send = QByteArray(reinterpret_cast<const char*>(&informationPackage), sizeof(Information_Package_STR));
+        BT_Buffer_Send = QByteArray(reinterpret_cast<const char*>(&Data), sizeof(Information_Package_STR));
         socket->write(BT_Buffer_Send);
         qDebug().noquote()<< GRN << "[INFO][BLUETOOTH]Data sent, size:%ld" << sizeof(Information_Package_STR) <<RESET;
 }

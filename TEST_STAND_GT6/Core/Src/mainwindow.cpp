@@ -209,14 +209,15 @@ void MainWindow::connectToStand()
         connect(this,&MainWindow::dataSent,serialManager,&SerialManager::write);
         disconnect(this,&MainWindow::dataSent,bluetoothManager, &BluetoothManager::write); 
         connect(serialManager,&SerialManager::receivedData,this, &MainWindow::displayReceivedData);
-       disconnect(bluetoothManager,&BluetoothManager::dataReceived,this, &MainWindow::displayReceivedData);
+        disconnect(bluetoothManager,&BluetoothManager::receivedData,this, &MainWindow::displayReceivedData);
+        bluetoothManager->deinit();
         qDebug().noquote()<< BLU << "[INFO][MAIN]Comunications switched to serial" << RESET;
         break;
     case false:
         bluetoothManager->init();
         disconnect(this, &MainWindow::dataSent,serialManager,&SerialManager::write);
         connect(this, &MainWindow::dataSent,bluetoothManager, &BluetoothManager::write);
-        connect(bluetoothManager,&BluetoothManager::dataReceived,this,&MainWindow::displayReceivedData);
+        connect(bluetoothManager,&BluetoothManager::receivedData,this,&MainWindow::displayReceivedData);
         disconnect(serialManager,&SerialManager::receivedData,this,&MainWindow::displayReceivedData);
         qDebug().noquote()<< BLU << "[INFO][MAIN]Comunications switched to bluetooth" << RESET;
         break;
@@ -233,7 +234,7 @@ void MainWindow::switchComunications()
     disconnect(this, &MainWindow::dataSent,bluetoothManager, &BluetoothManager::write); 
     disconnect(this, &MainWindow::dataSent,serialManager, &SerialManager::write);
     disconnect(serialManager, &SerialManager::receivedData,this, &MainWindow::displayReceivedData);
-    disconnect(serialManager, &SerialManager::receivedData,this, &MainWindow::displayReceivedData);
+    disconnect(bluetoothManager, &BluetoothManager::receivedData,this, &MainWindow::displayReceivedData);
     userInterface->CONNECT->setText("CONNECT");
     emit switchComunicationProtocol(commMethod);
 }

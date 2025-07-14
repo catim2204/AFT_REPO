@@ -265,30 +265,15 @@ int main(void)
     //rpm = Calculate_RPM();
     switch (Current_State)
     {
-
-      //       Telemetry_Package.Throttle=Information_Package.Throttle;
-      //   ADC_DeadBand_Filter();
-      //   Voltage = Convert_ADC_Battery();
-      //   split_float(Voltage,&Telemetry_Package.Voltage_I,&Telemetry_Package.Voltage_F,2);
-      //   Current_S = Convert_ADC_Current();
-      //   split_float(Current_S,&Telemetry_Package.Current_I,&Telemetry_Package.Current_F,2);
-      //   Thrust    = Convert_ADC_Thrust();    
-      //   split_float(Thrust, &Telemetry_Package.Thrust_I,&Telemetry_Package.Thrust_F,3);
-      //   Convert_ADC_Torque();
-      //   split_float(Torque, &Telemetry_Package.Torque_I,&Telemetry_Package.Torque_F,3);
-      //   rpm= Calculate_RPM();
-      //   split_float(rpm, &Telemetry_Package.RPM_I, &Telemetry_Package.RPM_F, 2);
-      // Transmit_Data();
-      // Last_Throttle_Value=Information_Package.Throttle;
-      // HAL_Delay(50);
-    case MODE_INTERNAL:
-      Internal_Mode();
-      break;
-    case MODE_UI:
-      UI_Mode();
-      break;
-    default:
-      break;
+      case MODE_INTERNAL:
+        Internal_Mode();
+        break;
+      case MODE_UI:
+        UI_Mode();
+        break;
+      default:
+        Error_Handler();
+        break;
     }
     /* USER CODE END WHILE */
 
@@ -360,6 +345,7 @@ void SystemClock_Config(void)
         { 
         if(Abort==true)
         { 
+          __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 1000);
           Abort=false;
           Information_Package.Start_Test =0;
           Current_State=0;
@@ -389,8 +375,9 @@ void SystemClock_Config(void)
       for(int i=0;i<=1000;i+=10)
       { 
         if(Abort==true)
-        { 
+        {
           Abort=false;
+          __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 1000);
           Information_Package.Start_Test =0;
           Current_State=0;
           break;
@@ -535,6 +522,7 @@ void Manual_Mode()
       ADC_Offset_Torque  = ADC_Values[0];
       ADC_Offset_Voltage = 0;
       ADC_Offset_Current = ADC_Values[3];
+      memset(&Telemetry_Package, 0, sizeof(Telemetry_Package));
       Information_Package.Calibration=0;
       Current_State=1;
       UI_States=0;

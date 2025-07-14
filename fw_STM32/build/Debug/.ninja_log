@@ -23,7 +23,7 @@
 2	221	1752144866922586767	CMakeFiles/fw_STM32.dir/FATFS/Target/user_diskio.c.obj	4a80e11808a19816
 604	884	1752144867584595210	cmake/stm32cubemx/CMakeFiles/FatFs.dir/__/__/Middlewares/Third_Party/FatFs/src/ff_gen_drv.c.obj	d724817a5a595d0f
 3	242	1752144866935586933	CMakeFiles/fw_STM32.dir/Core/Src/adc.c.obj	3b4a10011765b1e3
-3	261	1752144866960587252	CMakeFiles/fw_STM32.dir/Core/Src/main.c.obj	d1423da15cafb853
+3	165	1752145986057944458	CMakeFiles/fw_STM32.dir/Core/Src/main.c.obj	d1423da15cafb853
 8	244	1752144866941587009	CMakeFiles/fw_STM32.dir/Core/Src/stm32f1xx_it.c.obj	81fdea9b91529ff5
 270	526	1752144867226590644	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c.obj	7fb73a0bb89fb964
 2	192	1752144866892586384	CMakeFiles/fw_STM32.dir/USB_DEVICE/App/usbd_cdc_if.c.obj	f80b5965bf51b4e7
@@ -54,5 +54,5 @@
 284	607	1752144867303591626	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c.obj	34716394118c2b6e
 4	215	1752144866916586691	CMakeFiles/fw_STM32.dir/Core/Src/rtc.c.obj	ec3c8468644afbf7
 4	261	1752144866956587201	CMakeFiles/fw_STM32.dir/Core/Src/i2c.c.obj	af8278ac39c9a254
-1002	1130	1752144867828598322	fw_STM32.elf	6e2c009b5472c43f
+165	313	1752145986201946315	fw_STM32.elf	6e2c009b5472c43f
 217	249	1752144866947587086	CMakeFiles/fw_STM32.dir/startup_stm32f103xb.s.obj	819219332d428af8
