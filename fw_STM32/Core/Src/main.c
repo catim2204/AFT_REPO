@@ -38,6 +38,8 @@
 #include <string.h>
 #include <usbd_cdc_if.h>
 #include "Data_Packets.h"
+#include "bme68x.h"
+#include "bme68x_defs.h"
 //#include <sdcard.h>
 //#include "ff.h"
 //#include <user_diskio.h>
@@ -66,6 +68,7 @@
   #define UI_CALIBRATE          2  
   #define UI_MANUAL_MODE        3 
   #define UI_ONBOARD_MODE       4
+  #define UI_IDLE_MODE          5
   #define LCD_DISPLAY_VALUES    1
   #define LCD_CHANGE_S_NUM      2
   #define LCD_CHANGE_C_STEADY   3
@@ -143,7 +146,7 @@
   uint16_t filtered_value[5]= {0,0,0,0,0};
   uint16_t ADC_Offset_Thrust;
   uint16_t ADC_Offset_Torque;
-  uint16_t ADC_Offset_Current;
+  uint16_t ADC_Offset_Current=2035;
   uint16_t ADC_Offset_Voltage;
 
   uint64_t period_counts = 0;
@@ -183,14 +186,17 @@ void SystemClock_Config(void);
   void Change_LC_Thrust();
   void Change_LC_Torque();
   void Save_Log();
-  void split_float(float value, int16_t *int_part, uint16_t *frac_part, int precision);
+  void split_double(double value, int16_t *int_part, uint16_t *frac_part, int precision);
   void Test_Mode();
   void Manual_Mode();
   void Calibrate();
   void Transmit_Data();
   void Gather_Information();
- 
-
+  void Idle_State();
+  void Initialize_BME680();
+  int8_t user_i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t len);
+  int8_t user_i2c_write(uint8_t dev_id, const uint8_t *data, uint16_t len);
+  void user_delay_us(uint32_t period, void *intf_ptr);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -213,7 +219,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+   HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -238,6 +244,7 @@ int main(void)
   MX_ADC1_Init();
   MX_FATFS_Init();
   MX_TIM3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   HAL_ADCEx_Calibration_Start(&hadc1);
   HAL_ADC_Start_DMA(&hadc1,(uint32_t *)&ADC_Values,5); 
@@ -252,9 +259,9 @@ int main(void)
   Current_State=1;
   HAL_Delay(50);
   ADC_DeadBand_Filter();
-  Calibrate();
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
   __HAL_TIM_SetCompare(&htim2, TIM_CHANNEL_1, 1000);
+  Initialize_BME680();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -354,15 +361,15 @@ void SystemClock_Config(void)
         ADC_DeadBand_Filter();
         __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, i+999);
         Voltage = Convert_ADC_Battery();
-        split_float(Voltage,&Telemetry_Package.Voltage_I,&Telemetry_Package.Voltage_F,2);
+        split_double(Voltage,&Telemetry_Package.Voltage_I,&Telemetry_Package.Voltage_F,2);
         Current_S = Convert_ADC_Current();
-        split_float(Current_S,&Telemetry_Package.Current_I,&Telemetry_Package.Current_F,2);
+        split_double(Current_S,&Telemetry_Package.Current_I,&Telemetry_Package.Current_F,2);
         Thrust    = Convert_ADC_Thrust();    
-        split_float(Thrust, &Telemetry_Package.Thrust_I,&Telemetry_Package.Thrust_F,3);
+        split_double(Thrust, &Telemetry_Package.Thrust_I,&Telemetry_Package.Thrust_F,3);
         Convert_ADC_Torque();
-        split_float(Torque, &Telemetry_Package.Torque_I,&Telemetry_Package.Torque_F,3);
+        split_double(Torque, &Telemetry_Package.Torque_I,&Telemetry_Package.Torque_F,3);
         rpm= Calculate_RPM();
-        split_float(rpm, &Telemetry_Package.RPM_I, &Telemetry_Package.RPM_F, 2);
+        split_double(rpm, &Telemetry_Package.RPM_I, &Telemetry_Package.RPM_F, 2);
         if(i%10==0)Telemetry_Package.Throttle=i/10;
         Telemetry_Package.PWM_Time = i+1000;
         Safety_Check();
@@ -385,13 +392,13 @@ void SystemClock_Config(void)
         ADC_DeadBand_Filter();
         __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, i+999);
         Voltage = Convert_ADC_Battery();
-        split_float(Voltage,&Telemetry_Package.Voltage_I,&Telemetry_Package.Voltage_F,2);
+        split_double(Voltage,&Telemetry_Package.Voltage_I,&Telemetry_Package.Voltage_F,2);
         Current_S = Convert_ADC_Current();
-        split_float(Current_S,&Telemetry_Package.Current_I,&Telemetry_Package.Current_F,2);
+        split_double(Current_S,&Telemetry_Package.Current_I,&Telemetry_Package.Current_F,2);
         Thrust    = Convert_ADC_Thrust();    
-        split_float(Thrust, &Telemetry_Package.Thrust_I,&Telemetry_Package.Thrust_F,3);
+        split_double(Thrust, &Telemetry_Package.Thrust_I,&Telemetry_Package.Thrust_F,3);
         Convert_ADC_Torque();
-        split_float(Torque, &Telemetry_Package.Torque_I,&Telemetry_Package.Torque_F,3);
+        split_double(Torque, &Telemetry_Package.Torque_I,&Telemetry_Package.Torque_F,3);
         if(i%10==0)Telemetry_Package.Throttle=i/10;
         Telemetry_Package.PWM_Time = i+1000;
         Safety_Check();
@@ -413,15 +420,15 @@ void Manual_Mode()
       Telemetry_Package.Throttle=Information_Package.Throttle;
         ADC_DeadBand_Filter();
         Voltage = Convert_ADC_Battery();
-        split_float(Voltage,&Telemetry_Package.Voltage_I,&Telemetry_Package.Voltage_F,2);
+        split_double(Voltage,&Telemetry_Package.Voltage_I,&Telemetry_Package.Voltage_F,2);
         Current_S = Convert_ADC_Current();
-        split_float(Current_S,&Telemetry_Package.Current_I,&Telemetry_Package.Current_F,2);
+        split_double(Current_S,&Telemetry_Package.Current_I,&Telemetry_Package.Current_F,2);
         Thrust    = Convert_ADC_Thrust();    
-        split_float(Thrust, &Telemetry_Package.Thrust_I,&Telemetry_Package.Thrust_F,3);
+        split_double(Thrust, &Telemetry_Package.Thrust_I,&Telemetry_Package.Thrust_F,3);
         Convert_ADC_Torque();
-        split_float(Torque, &Telemetry_Package.Torque_I,&Telemetry_Package.Torque_F,3);
+        split_double(Torque, &Telemetry_Package.Torque_I,&Telemetry_Package.Torque_F,3);
         rpm= Calculate_RPM();
-        split_float(rpm, &Telemetry_Package.RPM_I, &Telemetry_Package.RPM_F, 2);
+        split_double(rpm, &Telemetry_Package.RPM_I, &Telemetry_Package.RPM_F, 2);
       Transmit_Data();
       Last_Throttle_Value=Information_Package.Throttle;
       HAL_Delay(50);
@@ -436,10 +443,10 @@ void Manual_Mode()
    * @param frac_part 
    * @param precision 
    */
-  void split_float(float value, int16_t *int_part, uint16_t *frac_part, int precision) 
+  void split_double(double value, int16_t *int_part, uint16_t *frac_part, int precision) 
   {
       *int_part = abs((int)value);
-      float frac = value - *int_part;
+      double frac = value - *int_part;
       *frac_part = abs((int)(roundf(frac * powf(10, precision))));
   }
   
@@ -517,11 +524,12 @@ void Manual_Mode()
    */
   void Calibrate()
   {   
+      __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 2000);
+      HAL_Delay(5000);
+      __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 1000);
       ADC_DeadBand_Filter();
       ADC_Offset_Thrust  = ADC_Values[1];
       ADC_Offset_Torque  = ADC_Values[0];
-      ADC_Offset_Voltage = 0;
-      ADC_Offset_Current = ADC_Values[3];
       memset(&Telemetry_Package, 0, sizeof(Telemetry_Package));
       Information_Package.Calibration=0;
       Current_State=1;
@@ -545,6 +553,10 @@ void Manual_Mode()
         if(Current_S > Information_Package.Current_Limit_Steady)
         {
           Telemetry_Package.Error_Code=2;
+          Abort=true;
+        }
+        if(Information_Package.Panic_Abort)
+        {
           Abort=true;
         }
   }
@@ -601,12 +613,6 @@ void Manual_Mode()
         ARM=!ARM;
         LCD_Clear_Flag=true;
     }
-    if(GPIO_Pin == IR_SENS)
-    {
-      pulse_count++;
-    }
-    
-    
   }
 
 
@@ -629,25 +635,25 @@ void Manual_Mode()
     Convert_ADC_Torque();
     LCD_SetCursor(0,0);
     LCD_SendString("Voltage");
-    split_float(Voltage,&Telemetry_Package.Voltage_I,&Telemetry_Package.Voltage_F,2);
+    split_double(Voltage,&Telemetry_Package.Voltage_I,&Telemetry_Package.Voltage_F,2);
     LCD_SetCursor(8,0);
     LCD_SendFloat(Telemetry_Package.Voltage_I,Telemetry_Package.Voltage_F);
     Define_States_UI();
     ADC_DeadBand_Filter();
     LCD_SetCursor(0,1);
     LCD_SendString("Current");
-    split_float(Current_S,&Telemetry_Package.Current_I,&Telemetry_Package.Current_F,2);
+    split_double(Current_S,&Telemetry_Package.Current_I,&Telemetry_Package.Current_F,2);
     LCD_SetCursor(8,1);
     LCD_SendFloat(Telemetry_Package.Current_I,Telemetry_Package.Current_F);
     LCD_SetCursor(0,2);
     LCD_SendString("Thrust");
     LCD_SetCursor(7,2);
-    split_float(Thrust,&Telemetry_Package.Thrust_I,&Telemetry_Package.Thrust_F,3);
+    split_double(Thrust,&Telemetry_Package.Thrust_I,&Telemetry_Package.Thrust_F,3);
     LCD_SendFloat(Telemetry_Package.Thrust_I,Telemetry_Package.Thrust_F);
     LCD_SetCursor(0,3);
     LCD_SendString("Torque");
     LCD_SetCursor(7,3);
-    split_float(Torque,&Telemetry_Package.Torque_I,&Telemetry_Package.Torque_F,3);
+    split_double(Torque,&Telemetry_Package.Torque_I,&Telemetry_Package.Torque_F,3);
     LCD_SendFloat(Telemetry_Package.Torque_I,Telemetry_Package.Torque_F);
     
   }
@@ -711,7 +717,9 @@ void Manual_Mode()
     case UI_MANUAL_MODE:
       Manual_Mode();
       break;
-    default:
+    case UI_IDLE_MODE:
+      
+    default: 
       break;
     }
   }
@@ -829,7 +837,7 @@ void Manual_Mode()
   }
   void Save_Log()
   {
-
+    
   }
   void Transmit_Data()
   {
@@ -858,47 +866,48 @@ void Manual_Mode()
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) 
 {
   if(htim == &htim3)  // Check if the interrupt is from TIM3
+  {
+    if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
     {
-  
-    //   if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)  // Check if the interrupt is from TIM3 Channel 1
-    // {
-        // if(capture_done == 0) 
-        // {
-        //     capture1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-        //     capture_done = 1;
-        // } else 
-        // {
-        //     capture2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-        //     if(capture2 > capture1)
-        //           period_counts = capture2 - capture1;
-        //     else // timer overflow
-        //         period_counts = (htim->Instance->ARR - capture1) + capture2 + 1;
-        //     capture_done = 2;
-        // }
-        // 
-        if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
-        {
-            if(capture_done < 10) 
-            {
+      if(capture_done < 10) 
+      {
 
-              Capture_Buffer[capture_done] = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); 
-              capture_done++;
+         Capture_Buffer[capture_done] = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); 
+         capture_done++;
               
-            }
-            else
-            {
+      }
+      else
+      {
                 // Reset the capture buffer if it is full
                 rpm = Calculate_RPM();
                 capture_done = 0;
                 period_counts = 0;
-            }
-
-        }
-
+      }
     }
+  }
+}
   
+void Idle_State()
+{
+  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0);
+}
+static struct bme68x_dev gas_sensor;
+void Initialize_BME680()
+{
+    
+    gas_sensor.intf = BME68X_I2C_INTF;
+    gas_sensor.read = user_i2c_read;
+    gas_sensor.write = user_i2c_write;
+    gas_sensor.delay_us = user_delay_us;
+    gas_sensor.intf_ptr = &hi2c1;  // Pointer to your I2C handle
+    gas_sensor.amb_temp = 25;      // Ambient temperature (°C), optional
+    int8_t result = bme68x_init(&gas_sensor);
+    if (result != BME68X_OK) {
+        // Handle error
     }
-  
+    
+    
+}
 
 double Calculate_RPM() 
 {
@@ -918,6 +927,25 @@ double Calculate_RPM()
 
 }
 
+int8_t user_i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t len)
+{
+    HAL_StatusTypeDef status;
+    status = HAL_I2C_Mem_Read((I2C_HandleTypeDef *)dev_id, BME68X_I2C_ADDR_HIGH, reg_addr, I2C_MEMADD_SIZE_8BIT, data, len, HAL_MAX_DELAY);
+    return (status == HAL_OK) ? BME68X_OK : BME68X_E_COM_FAIL;
+}
+
+int8_t user_i2c_write(uint8_t dev_id, const uint8_t *data, uint16_t len)
+{
+    HAL_StatusTypeDef status;
+    status = HAL_I2C_Master_Transmit((I2C_HandleTypeDef *)dev_id, BME68X_I2C_ADDR_HIGH, (uint8_t *)data, len, HAL_MAX_DELAY);
+    return (status == HAL_OK) ? BME68X_OK : BME68X_E_COM_FAIL;
+}
+
+void user_delay_us(uint32_t period, void *intf_ptr)
+{
+    uint32_t start = __HAL_TIM_GET_COUNTER(&htim4);  // use a microsecond timer
+    while ((__HAL_TIM_GET_COUNTER(&htim4) - start) < period);
+}
 
 /* USER CODE END 4 */
 

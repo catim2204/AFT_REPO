@@ -43,7 +43,7 @@
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 60,
+				"line" : 59,
 				"parent" : 0
 			},
 			{
@@ -55,7 +55,7 @@
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 52,
+				"line" : 50,
 				"parent" : 0
 			}
 		]
@@ -180,7 +180,8 @@
 				19,
 				21,
 				22,
-				23
+				23,
+				24
 			]
 		},
 		{
@@ -337,7 +338,8 @@
 				19,
 				21,
 				22,
-				23
+				23,
+				24
 			]
 		},
 		{
@@ -351,7 +353,6 @@
 			"name" : "Object Libraries",
 			"sourceIndexes" : 
 			[
-				24,
 				25,
 				26,
 				27,
@@ -382,7 +383,8 @@
 				52,
 				53,
 				54,
-				55
+				55,
+				56
 			]
 		}
 	],
@@ -530,6 +532,12 @@
 			"backtrace" : 6,
 			"compileGroupIndex" : 0,
 			"path" : "Core/Src/sdcard.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 6,
+			"compileGroupIndex" : 0,
+			"path" : "Core/Src/bme68x.c",
 			"sourceGroupIndex" : 0
 		},
 		{

@@ -24,6 +24,8 @@ qt_add_executable(TSQT6
     ${CORE_HEADERS}
     ${CMAKE_SOURCE_DIR}/../Shared/Inc/Data_Packets.h
     ${CMAKE_SOURCE_DIR}/Core/Src/mainwindow.ui 
+    ${CMAKE_SOURCE_DIR}/Core/Src/dialog.ui 
+    
 )
 target_include_directories(TSQT6 PRIVATE
     ${CMAKE_SOURCE_DIR}/Core/Inc

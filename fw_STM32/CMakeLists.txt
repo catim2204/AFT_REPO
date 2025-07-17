@@ -45,14 +45,13 @@ add_subdirectory(cmake/stm32cubemx)
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths
-
 )
-
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/Core/Src/ADC_Scan.c
     ${CMAKE_SOURCE_DIR}/Core/Src/I2C_2.c
     ${CMAKE_SOURCE_DIR}/Core/Src/sdcard.c
+    ${CMAKE_SOURCE_DIR}/Core/Src/bme68x.c
 )
 
 

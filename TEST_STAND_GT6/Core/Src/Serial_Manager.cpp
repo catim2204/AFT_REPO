@@ -1,6 +1,6 @@
 #include <Serial_Manager.h>
 #include "ui_mainwindow.h"
-
+#include <QMessageBox>
 SerialManager::SerialManager(QObject *parent): QObject(parent), serial(new QSerialPort(this))
 {
     qDebug() << BLU <<"[INFO][SERIAL] Initializing Serial Manager..." << RESET;

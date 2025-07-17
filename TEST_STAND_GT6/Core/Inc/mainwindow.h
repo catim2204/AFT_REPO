@@ -31,6 +31,7 @@
 
 #include <Bluetooth_Manager.h>
 #include <Serial_Manager.h>
+#include <Pre_Checks_Window.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -47,6 +48,8 @@ private:
     bool commMethod;
     bool save; 
     bool calibrate;
+    bool abort;
+    
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -54,7 +57,6 @@ public:
 signals:
     void dataSent(const Information_Package_STR &Data);
     void switchComunicationProtocol(bool Comm_Data);
-
 private slots:
     void displayReceivedData(const Telemetry_Package_STR &data);
     void sendData();
@@ -63,6 +65,8 @@ private slots:
     void switchComunications();
     void startTest();
     void calibrateStand();
+    void onArmCheckToggled(bool checked);
+    void panicAbort();    
 
 private:
     void saveLogToCSV(const QString& filename);
@@ -74,7 +78,7 @@ private:
     Telemetry_Package_STR telemetryPackage;
     BluetoothManager *bluetoothManager = nullptr;
     SerialManager *serialManager = nullptr; 
-
+    PreCheckWindow *dialogBox = nullptr;
 };
 #endif // MAINWINDOW_H
 

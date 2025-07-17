@@ -30,6 +30,8 @@
 #include <QTimer>
 #include <QDir>
 #include <qfiledialog.h>
+#include <QMessageBox>
+
 
 /** @brief This is the constructor, on call it creates the Ui and starts a serial connection on `CONNECT button pressed`*/
 MainWindow::MainWindow(QWidget *parent)
@@ -39,11 +41,10 @@ MainWindow::MainWindow(QWidget *parent)
       bluetoothManager(new BluetoothManager(this)),
       throttleTimer(new QTimer(this))
 {
-        Q_ASSERT(userInterface!=nullptr);
-        Q_ASSERT(serialManager!=nullptr);
-        Q_ASSERT(bluetoothManager != nullptr);
-        Q_ASSERT(throttleTimer != nullptr);
-
+        if(userInterface == nullptr || serialManager == nullptr || bluetoothManager == nullptr || throttleTimer == nullptr)
+        {
+            QMessageBox::critical(this,"ERROR","Startup failed");
+        }
         userInterface->setupUi(this);
         connect(userInterface->Comm_Method,&QPushButton::clicked,this,&MainWindow::switchComunications);
         connect(userInterface->CONNECT,&QPushButton::clicked,this,&MainWindow::connectToStand);
@@ -52,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
         connect(userInterface->START,&QPushButton::clicked,this,&MainWindow::startTest);
         connect(userInterface->CALIBRATE,&QPushButton::clicked,this,&MainWindow::calibrateStand);
         connect(userInterface->Throttle,&QSlider::valueChanged,this,&MainWindow::sendData);
-
+        connect(userInterface->Abort,&QPushButton::clicked,this,&MainWindow::panicAbort);
 }
  
 MainWindow::~MainWindow() 
@@ -78,17 +79,23 @@ void MainWindow::saveLogToCSV(const QString& filename)
     out << "Voltage,Current,RPM,Thrust,Torque,Throttle,PWM_Time\n";
 
     for (const Telemetry_Package_STR &telemetryPackage : std::as_const(Received_Data_Log)) {
-        out << telemetryPackage.Voltage_I  << "." 
-            << telemetryPackage.Voltage_F  << ","
-            << telemetryPackage.Current_I  << "." 
-            << telemetryPackage.Current_F  << ","
-            << telemetryPackage.RPM_I      << "." 
-            << telemetryPackage.RPM_F      << ","
-            << telemetryPackage.Thrust_I   << "."
-            << telemetryPackage.Thrust_F   << ","
-            << telemetryPackage.Torque_I   << "."
-            << telemetryPackage.Torque_F   << "," 
-            << telemetryPackage.Throttle   << ","
+        out << telemetryPackage.Voltage_I       << "." 
+            << telemetryPackage.Voltage_F       << ","
+            << telemetryPackage.Current_I       << "." 
+            << telemetryPackage.Current_F       << ","
+            << telemetryPackage.RPM_I           << "." 
+            << telemetryPackage.RPM_F           << ","
+            << telemetryPackage.Thrust_I        << "."
+            << telemetryPackage.Thrust_F        << ","
+            << telemetryPackage.Torque_I        << "."
+            << telemetryPackage.Torque_F        << "," 
+            << telemetryPackage.Throttle        << ","
+            << telemetryPackage.Pressure_I      << "."
+            << telemetryPackage.Pressure_F      << ","
+            << telemetryPackage.Temperature_I   << "."
+            << telemetryPackage.Temperature_F   << ","
+            << telemetryPackage.Humidity_I      << "."
+            << telemetryPackage.Humidity_F      << ","
             << telemetryPackage.PWM_Time   <<"\n";
         }
 
@@ -162,6 +169,7 @@ void MainWindow::displayReceivedData(const Telemetry_Package_STR &data)
              << "Error_Code:"  << data.Error_Code
              <<RESET;
 }
+
 void MainWindow::sendData()
 {       
         informationPackage.Start     = 255;
@@ -230,6 +238,14 @@ void MainWindow::connectToStand()
 void MainWindow::switchComunications()
 {
     commMethod = !commMethod;
+    if(commMethod)
+    {
+        userInterface->Comm_Method->setText("Serial");
+    }
+    else
+    {
+
+    }
     qDebug().noquote()<< BLU << "[INFO][MAIN]Bool toggled" << commMethod << RESET;
     disconnect(this, &MainWindow::dataSent,bluetoothManager, &BluetoothManager::write); 
     disconnect(this, &MainWindow::dataSent,serialManager, &SerialManager::write);
@@ -238,6 +254,7 @@ void MainWindow::switchComunications()
     userInterface->CONNECT->setText("CONNECT");
     emit switchComunicationProtocol(commMethod);
 }
+
 void MainWindow::disconnectFromStand()
 {
     disconnect(this, &MainWindow::dataSent,bluetoothManager, &BluetoothManager::write); 
@@ -253,9 +270,22 @@ void MainWindow::startTest()
     sendData();
     start=false;
 }
+
 void MainWindow::calibrateStand()
 {
     calibrate=true;
     sendData();
     calibrate=false;
+}
+
+void MainWindow::onArmCheckToggled(bool checked)
+{
+         // or dialogBox->exec();
+}
+
+void MainWindow::panicAbort()
+{
+    abort=true;
+    sendData();
+    abort=false;
 }

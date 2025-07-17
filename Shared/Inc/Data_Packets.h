@@ -17,6 +17,7 @@ typedef struct Information_Package_STR
     bool Ui_Mode;
     bool Save_To_Controller;
     bool Calibration;
+    bool Panic_Abort;
     uint8_t Load_Cell_Thrust;
     uint8_t Load_Cell_Torque;
     uint8_t Stop;
@@ -36,6 +37,12 @@ typedef struct Telemetry_Package_STR
     uint16_t Torque_F;
     uint8_t Throttle;
     uint16_t PWM_Time;
+    uint16_t Pressure_I;
+    uint16_t Pressure_F;
+    int16_t Temperature_I;
+    uint16_t Temperature_F;
+    uint16_t Humidity_I;
+    uint16_t Humidity_F;
     uint8_t Error_Code;
 }Telemetry_Package_STR;
 #pragma pack(pop)
